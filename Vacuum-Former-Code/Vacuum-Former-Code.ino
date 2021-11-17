@@ -1,7 +1,7 @@
 // Void of Creation: Team A9
 // October 20, 2021
 // Final Code for Temp Sensor, LCD screen, and Servo Arm Control
-// 
+// Git edit
 //Include libraries
 #include <PID_v1.h> //PID library
 #include <LiquidCrystal.h> //LCD library
