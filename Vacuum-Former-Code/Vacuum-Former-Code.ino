@@ -16,7 +16,7 @@ const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #define servoPin 9 //servo pin
 #define buttonpin 7 //button pin
-#define relayPin 8 //relay pin
+#define RelayPin 8 //relay pin
 #define piezopin 10 //buzzer pin
 
 //initializing variables
@@ -25,14 +25,16 @@ int currentbuttonstate;
 int angle = 0; //initializing servo angle for reference
 int servopos = 90; //initializing servo position
 
-int threshold = 90; //THRESHOLD TEMP: change this for desired temp
+int threshold = 250; //THRESHOLD TEMP: change this for desired temp, this is in deg. F
 
 int temp = 0;
 
 //PID control stuff (got from https://www.teachmemicro.com/arduino-pid-control-tutorial/)
 double Setpoint, Input, Output;
-double Kp=2, Ki=0, Kd=0; //Set ki and kd to zero and then tune system where kp converges without much overshoot, then tune finer with kd and ki
+double Kp=700, Ki=1, Kd=0; //Set ki and kd to zero and then tune system where kp converges without much overshoot, then tune finer with kd and ki
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+int WindowSize = 5000;
+unsigned long windowStartTime;
 
 void setup() {
   //LCD screen stuff
@@ -46,6 +48,17 @@ void setup() {
   //initialize the variables we're linked to
   Input = analogRead(mlx.readObjectTempF());
   Setpoint = threshold;
+  
+  pinMode(RelayPin, OUTPUT);
+
+  windowStartTime = millis();
+
+  //initialize the variables we're linked to
+  Setpoint = threshold;
+
+  //tell the PID to range between 0 and the full window size
+  myPID.SetOutputLimits(0, WindowSize);
+
   //turn the PID on
   myPID.SetMode(AUTOMATIC);
 }
@@ -62,18 +75,24 @@ void loop() {
   Serial.print("Ambient = "); Serial.print(mlx.readAmbientTempF());
   Serial.print("*F\tObject = "); Serial.print(mlx.readObjectTempF()); Serial.println("*F");
   Serial.println();
-
-  //PID control: setting input as reading temp from the temp sensor
-  Input = analogRead(mlx.readObjectTempF());
-  
-  //Computing PID
-  myPID.Compute();
-
-  //Writing to relay pin the output from the PID
-  analogWrite(relayPin, Output);
   
   //Reading temp from the sensor
   temp = mlx.readObjectTempF();
+  Input = temp;
+  myPID.Compute();
+
+  /************************************************
+     turn the output pin on/off based on pid output
+   ************************************************/
+  unsigned long now = millis();
+  if (now - windowStartTime > WindowSize)
+  { //time to shift the Relay Window
+    windowStartTime += WindowSize;
+  }
+  if (Output > now - windowStartTime) digitalWrite(RelayPin, HIGH);
+  else digitalWrite(RelayPin, LOW);
+  Serial.print(Output);
+  
   
   //Button control
   lastbuttonstate = currentbuttonstate; //save last state
