@@ -25,8 +25,8 @@ int currentbuttonstate;
 int angle = 0; //initializing servo angle for reference
 int servopos = 90; //initializing servo position
 
-int threshold = 250; //THRESHOLD TEMP: change this for desired temp, this is in deg. F
-
+int threshold = 400; //THRESHOLD TEMP: change this for desired temp, this is in deg. F
+int ServoMoveTemp = 225; //When servo moves in degrees F
 int temp = 0;
 
 //PID control stuff (got from https://www.teachmemicro.com/arduino-pid-control-tutorial/)
@@ -105,7 +105,7 @@ void loop() {
    if (servopos == 90)//if the servo is at 90 move it back to zero when button is pressed
      servopos==0;  
   }
-   if(temp > threshold){
+   if(temp > ServoMoveTemp){
       //if temp surpasses the threshold
       servopos = 90; //move servo out of the way to 90
       tone(piezopin,1000,2000); //sound buzzer
