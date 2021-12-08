@@ -25,7 +25,7 @@ int currentbuttonstate;
 int angle = 0; //initializing servo angle for reference
 int servopos = 90; //initializing servo position
 
-int threshold = 215; //THRESHOLD TEMP: change this for desired temp, this is in deg. F
+int threshold = 220; //THRESHOLD TEMP: change this for desired temp, this is in deg. F
 int ServoMoveTemp = 210; //When servo moves in degrees F
 int temp = 0;
 
