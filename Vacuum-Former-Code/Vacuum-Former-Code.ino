@@ -25,8 +25,8 @@ int currentbuttonstate;
 int angle = 0; //initializing servo angle for reference
 int servopos = 90; //initializing servo position
 
-int threshold = 225; //THRESHOLD TEMP: change this for desired temp, this is in deg. F
-int ServoMoveTemp = 225; //When servo moves in degrees F
+int threshold = 210; //THRESHOLD TEMP: change this for desired temp, this is in deg. F
+int ServoMoveTemp = 210; //When servo moves in degrees F
 int temp = 0;
 
 //PID control stuff (got from https://www.teachmemicro.com/arduino-pid-control-tutorial/)
